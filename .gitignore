@@ -1,0 +1,33 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Secrets
+.env
+.env.*
+
+# Models
+models/
+*.bin
+*.safetensors
+*.ckpt
+
+# Data
+data/
+
+# Notebook
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+.idea/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
