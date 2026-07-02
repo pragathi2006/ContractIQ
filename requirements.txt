@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+transformers
+sentence-transformers
+scikit-learn
+torch
+pdfplumber
+python-multipart
+spacy
+pytesseract
+pdf2image
+numpy
+pandas
