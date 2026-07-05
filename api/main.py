@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 import os
+from src.pdf_parser import extract_text
 
 app = FastAPI()
 
@@ -23,7 +24,11 @@ async def upload_contract(file: UploadFile = File(...)):
         content = await file.read()
         buffer.write(content)
 
+    extracted_text = extract_text(file_path)
+
     return {
         "filename": file.filename,
-        "status": "File uploaded successfully"
+        "status": "File uploaded successfully",
+        "text_preview": extracted_text[:500] if extracted_text else "No text extracted"
     }
+    
