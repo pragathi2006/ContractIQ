@@ -24,8 +24,7 @@ async def upload_contract(file: UploadFile = File(...)):
         content = await file.read()
         buffer.write(content)
 
-    extracted_text = extract_text(file_path)
-
+    extracted_text, total_pages = extract_text(file_path)
     return {
         "filename": file.filename,
         "status": "File uploaded successfully",
