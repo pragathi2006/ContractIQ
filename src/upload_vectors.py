@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 
 # Connect to Pinecone
-pc = Pinecone(api_key=os.getenv("pcsk_7LMho9_36KBN6KkVR2gudDLaWRTnupyv3vdGYgFFYs7U1yZLDFH6WEb2GcA7ohAFr5Si2x"))
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index("contractiq")
 
 # Load embedding model
@@ -20,16 +20,16 @@ with open(train_path, "r", encoding="utf-8") as f:
     train_data = json.load(f)
 
 vectors = []
+NUM_CONTRACTS = 20
 
-# Upload first 5 contracts
-for i in range(5):
+for i in range(min(NUM_CONTRACTS, len(train_data["data"]))):
 
     clause = train_data["data"][i]["paragraphs"][0]["context"]
 
     embedding = embedding_model.encode(clause).tolist()
 
     vectors.append({
-        "id": str(i),
+        "id": f"contract_{i}",
         "values": embedding,
         "metadata": {
             "text": clause[:1000]
@@ -39,4 +39,6 @@ for i in range(5):
 # Upload to Pinecone
 index.upsert(vectors=vectors)
 
-print(f"✅ Uploaded {len(vectors)} vectors successfully!")
+from src.logger import logger
+
+logger.info(f"Uploaded {len(vectors)} vectors to Pinecone successfully.")

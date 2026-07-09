@@ -2,13 +2,16 @@ import os
 
 from dotenv import load_dotenv
 from pinecone import Pinecone
+from src.logger import logger
 
 load_dotenv()
 
 pc = Pinecone(
-    api_key=os.getenv("pcsk_7LMho9_36KBN6KkVR2gudDLaWRTnupyv3vdGYgFFYs7U1yZLDFH6WEb2GcA7ohAFr5Si2x")
+    api_key=os.getenv("PINECONE_API_KEY")
 )
 
 index = pc.Index("contractiq")
 
-print("✅ Connected to Pinecone!")
+
+
+logger.info("Connected to Pinecone")
