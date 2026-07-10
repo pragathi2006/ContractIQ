@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from pinecone import Pinecone
+
 from src.logger import logger
 
 load_dotenv()
@@ -12,6 +13,4 @@ pc = Pinecone(
 
 index = pc.Index("contractiq")
 
-
-
-logger.info("Connected to Pinecone")
+logger.info("Successfully connected to Pinecone index.")

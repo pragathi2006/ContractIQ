@@ -1,13 +1,15 @@
 import logging
 import os
 
-# Create logs folder if it doesn't exist
+# Create logs folder
 os.makedirs("logs", exist_ok=True)
 
+# Configure logging
 logging.basicConfig(
     filename="logs/contractiq.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-logger = logging.getLogger(__name__)
+# Create logger
+logger = logging.getLogger("ContractIQ")

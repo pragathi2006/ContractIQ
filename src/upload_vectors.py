@@ -1,26 +1,25 @@
-import os
 import json
-from dotenv import load_dotenv
-from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 
-# Load .env
-load_dotenv()
+from src.pinecone_db import index
+from src.logger import logger
 
-# Connect to Pinecone
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-index = pc.Index("contractiq")
+logger.info("Connected to Pinecone for vector upload.")
 
-# Load embedding model
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Load CUAD dataset
+logger.info("Embedding model loaded.")
+
 train_path = "data/data (1)/train_separate_questions.json"
+
 with open(train_path, "r", encoding="utf-8") as f:
     train_data = json.load(f)
 
-vectors = []
+logger.info(f"Loaded dataset with {len(train_data['data'])} contracts.")
+
 NUM_CONTRACTS = 20
+
+vectors = []
 
 for i in range(min(NUM_CONTRACTS, len(train_data["data"]))):
 
@@ -36,9 +35,13 @@ for i in range(min(NUM_CONTRACTS, len(train_data["data"]))):
         }
     })
 
-# Upload to Pinecone
-index.upsert(vectors=vectors)
+logger.info(f"Prepared {len(vectors)} vectors.")
 
-from src.logger import logger
+try:
+    index.upsert(vectors=vectors)
+    logger.info(f"Uploaded {len(vectors)} vectors successfully to Pinecone.")
+    print(f"✅ Uploaded {len(vectors)} vectors successfully!")
 
-logger.info(f"Uploaded {len(vectors)} vectors to Pinecone successfully.")
+except Exception as e:
+    logger.error(f"Vector upload failed: {e}")
+    print("Error:", e)
