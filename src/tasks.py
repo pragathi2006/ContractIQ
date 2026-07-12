@@ -1,15 +1,30 @@
-import time
-
 from src.celery_app import celery_app
+from src.pdf_parser import extract_text
 from src.logger import logger
 
+
 @celery_app.task
-def test_task():
+def process_pdf(file_path):
 
-    logger.info("Background task started.")
+    logger.info(f"Started processing PDF: {file_path}")
 
-    time.sleep(5)
+    try:
+        extracted_text, total_pages = extract_text(file_path)
 
-    logger.info("Background task completed.")
+        logger.info("PDF processed successfully.")
 
-    return "Task Finished Successfully!"
+        return {
+            "status": "SUCCESS",
+            "pages": total_pages,
+            "characters": len(extracted_text),
+            "preview": extracted_text[:500]
+        }
+
+    except Exception as e:
+
+        logger.error(f"Processing failed: {e}")
+
+        return {
+            "status": "FAILED",
+            "error": str(e)
+        }

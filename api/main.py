@@ -1,15 +1,16 @@
 from fastapi import FastAPI, UploadFile, File
+from celery.result import AsyncResult
 import os
 
-from src.pdf_parser import extract_text
 from src.logger import logger
+from src.tasks import process_pdf
+from src.celery_app import celery_app
 
 app = FastAPI()
 
 
 @app.get("/")
 def home():
-
     logger.info("Home endpoint accessed.")
 
     return {
@@ -20,41 +21,62 @@ def home():
 @app.post("/upload")
 async def upload_contract(file: UploadFile = File(...)):
 
-    logger.info(f"Received file: {file.filename}")
-
     upload_folder = "uploads"
-
-    if not os.path.exists(upload_folder):
-        os.makedirs(upload_folder)
-        logger.info("Uploads folder created.")
+    os.makedirs(upload_folder, exist_ok=True)
 
     file_path = os.path.join(upload_folder, file.filename)
 
     with open(file_path, "wb") as buffer:
-        content = await file.read()
-        buffer.write(content)
+        buffer.write(await file.read())
 
-    logger.info(f"File saved successfully: {file.filename}")
+    logger.info(f"Saved file: {file.filename}")
 
-    extracted_text, total_pages = extract_text(file_path)
+    task = process_pdf.delay(file_path)
 
-    if extracted_text:
-
-        logger.info("Text extraction completed successfully.")
-
-        return {
-            "filename": file.filename,
-            "status": "success",
-            "pages_processed": total_pages,
-            "characters_extracted": len(extracted_text),
-            "text_preview": extracted_text[:500],
-            "processing_status": "completed"
-        }
-
-    logger.error("Text extraction failed.")
+    logger.info(f"Background task created: {task.id}")
 
     return {
         "filename": file.filename,
-        "status": "failed",
-        "processing_status": "error"
+        "task_id": task.id,
+        "status": "Processing Started"
     }
+
+
+@app.get("/task/{task_id}")
+def get_task(task_id: str):
+
+    task = AsyncResult(task_id, app=celery_app)
+
+    if task.state == "PENDING":
+        return {
+            "task_id": task.id,
+            "state": task.state,
+            "message": "Task is waiting to be processed."
+        }
+
+    elif task.state == "STARTED":
+        return {
+            "task_id": task.id,
+            "state": task.state,
+            "message": "Task is currently running."
+        }
+
+    elif task.state == "SUCCESS":
+        return {
+            "task_id": task.id,
+            "state": task.state,
+            "result": task.result
+        }
+
+    elif task.state == "FAILURE":
+        return {
+            "task_id": task.id,
+            "state": task.state,
+            "error": str(task.result)
+        }
+
+    else:
+        return {
+            "task_id": task.id,
+            "state": task.state
+        }
