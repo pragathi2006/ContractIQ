@@ -15,3 +15,7 @@ celery
 redis
 pinecone
 python-dotenv
+sqlalchemy
+bcrypt
+pyjwt
+email-validator
