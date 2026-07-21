@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Any, Optional
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -25,3 +28,21 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+
+
+class ContractSummary(BaseModel):
+    id: int
+    task_id: str
+    filename: str
+    status: str
+    risk_level: Optional[str] = None
+    risk_score: Optional[int] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ContractDetail(ContractSummary):
+    error: Optional[str] = None
+    result: Optional[Any] = None
