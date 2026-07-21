@@ -29,6 +29,7 @@ uploads/*
 # Editor
 .vscode/
 .idea/
+.claude/
 
 # Node
 node_modules/
