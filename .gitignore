@@ -7,6 +7,10 @@ __pycache__/
 # Secrets
 .env
 .env.*
+!.env.example
+
+# Database
+*.db
 
 # Models
 models/
