@@ -11,3 +11,7 @@ pytesseract
 pdf2image
 numpy
 pandas
+celery
+redis
+pinecone
+python-dotenv

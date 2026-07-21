@@ -1,25 +1,59 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException, status
+from fastapi.responses import JSONResponse
 from celery.result import AsyncResult
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.logger import logger
 from src.tasks import process_pdf
 from src.celery_app import celery_app
 
-app = FastAPI()
+app = FastAPI(
+    title="ContractIQ API",
+    description="AI-Powered Contract Analysis API",
+    version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-
-@app.get("/")
+@app.get(
+    "/",
+    summary="API Health Check",
+    description="Checks whether the ContractIQ API is running."
+)
 def home():
+
     logger.info("Home endpoint accessed.")
 
     return {
-        "message": "ContractIQ API Running Successfully"
+        "success": True,
+        "message": "ContractIQ REST API is running.",
+        "version": "1.0.0"
     }
 
 
-@app.post("/upload")
+@app.post(
+    "/upload",
+    summary="Upload Contract",
+    description="Uploads a PDF contract and starts background processing using Celery."
+)
 async def upload_contract(file: UploadFile = File(...)):
+
+    if not file.filename.lower().endswith(".pdf"):
+        logger.warning("Non-PDF file upload attempted.")
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are allowed."
+        )
 
     upload_folder = "uploads"
     os.makedirs(upload_folder, exist_ok=True)
@@ -35,48 +69,76 @@ async def upload_contract(file: UploadFile = File(...)):
 
     logger.info(f"Background task created: {task.id}")
 
-    return {
-        "filename": file.filename,
-        "task_id": task.id,
-        "status": "Processing Started"
-    }
+    return JSONResponse(
+        status_code=status.HTTP_202_ACCEPTED,
+        content={
+            "success": True,
+            "message": "PDF uploaded successfully. Background processing started.",
+            "data": {
+                "filename": file.filename,
+                "task_id": task.id
+            }
+        }
+    )
 
 
-@app.get("/task/{task_id}")
+@app.get(
+    "/task/{task_id}",
+    summary="Check Task Status",
+    description="Returns the processing status and result of a background task."
+)
 def get_task(task_id: str):
 
     task = AsyncResult(task_id, app=celery_app)
 
     if task.state == "PENDING":
+
         return {
-            "task_id": task.id,
-            "state": task.state,
-            "message": "Task is waiting to be processed."
+            "success": True,
+            "data": {
+                "task_id": task.id,
+                "state": task.state,
+                "message": "Task is waiting in queue."
+            }
         }
 
     elif task.state == "STARTED":
+
         return {
-            "task_id": task.id,
-            "state": task.state,
-            "message": "Task is currently running."
+            "success": True,
+            "data": {
+                "task_id": task.id,
+                "state": task.state,
+                "message": "Task is currently processing."
+            }
         }
 
     elif task.state == "SUCCESS":
+
         return {
-            "task_id": task.id,
-            "state": task.state,
-            "result": task.result
+            "success": True,
+            "data": {
+                "task_id": task.id,
+                "state": task.state,
+                "result": task.result
+            }
         }
 
     elif task.state == "FAILURE":
+
         return {
-            "task_id": task.id,
-            "state": task.state,
-            "error": str(task.result)
+            "success": False,
+            "data": {
+                "task_id": task.id,
+                "state": task.state,
+                "error": str(task.result)
+            }
         }
 
-    else:
-        return {
+    return {
+        "success": True,
+        "data": {
             "task_id": task.id,
             "state": task.state
         }
+    }

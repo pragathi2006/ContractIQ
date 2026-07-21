@@ -1,11 +1,22 @@
+import os
+import shutil
+
 from pdf2image import convert_from_path
 import pytesseract
 
-# Path to Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+from src.logger import logger
 
-# Path to Poppler bin folder
-POPPLER_PATH = r"C:\Users\pprag\Downloads\Release-26.02.0-0\poppler-26.02.0\Library\bin"
+# Allow overriding via environment variables; fall back to whatever is on PATH.
+TESSERACT_CMD = os.getenv("TESSERACT_CMD") or shutil.which("tesseract")
+POPPLER_PATH = os.getenv("POPPLER_PATH")  # None lets pdf2image search PATH.
+
+if TESSERACT_CMD:
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+else:
+    logger.warning(
+        "Tesseract executable not found. Set TESSERACT_CMD or add it to PATH "
+        "for OCR to work on scanned PDFs."
+    )
 
 
 def extract_text_from_scanned_pdf(pdf_path):

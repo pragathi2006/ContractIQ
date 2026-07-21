@@ -16,6 +16,8 @@ models/
 
 # Data
 data/
+uploads/*
+!uploads/.gitkeep
 
 # Notebook
 .ipynb_checkpoints/
@@ -23,6 +25,10 @@ data/
 # Editor
 .vscode/
 .idea/
+
+# Node
+node_modules/
+frontend/dist/
 
 # Build
 build/
