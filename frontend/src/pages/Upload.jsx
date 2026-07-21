@@ -80,7 +80,7 @@ export default function Upload() {
 
     console.error(err);
 
-    setError("Upload failed. Please try again.");
+    setError(err.response?.data?.detail || "Upload failed. Please try again.");
 
   }
 
