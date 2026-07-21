@@ -33,7 +33,8 @@ clause classifier trained on a real legal dataset, not keyword matching.
 
 **Backend** — FastAPI, SQLAlchemy (SQLite), Celery + Redis, JWT auth
 (PyJWT + bcrypt), spaCy, sentence-transformers, scikit-learn, pdfplumber,
-Tesseract OCR + pdf2image (fallback for scanned PDFs)
+Tesseract OCR + pdf2image (fallback for scanned PDFs), Pinecone (vector
+search for semantically similar contracts)
 
 **Frontend** — React 19, Vite, Tailwind CSS 4, Framer Motion, React Router
 
@@ -50,6 +51,8 @@ classifier's training data, methodology, and known limitations.
 - Async PDF processing via Celery so uploads don't block the API
 - Contract history per user, with real dashboard stats (not hardcoded numbers)
 - View any past analysis result again from Dashboard/History
+- OCR fallback for scanned/image-only PDFs
+- Semantic "Similar Contracts" search across your own contract history (Pinecone)
 - Graceful fallback to keyword matching if the trained model isn't present
 
 ## Getting started

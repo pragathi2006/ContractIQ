@@ -1,7 +1,7 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -11,7 +11,7 @@ import RiskCard from "../components/RiskCard";
 import SummaryCard from "../components/SummaryCard";
 import EntityCard from "../components/EntityCard";
 import ClauseCard from "../components/ClauseCard";
-import { getContract } from "../api/contracts";
+import { getContract, getSimilarContracts } from "../api/contracts";
 
 import {
   FileText,
@@ -29,6 +29,7 @@ export default function Result() {
   const [result, setResult] = useState(location.state?.result || null);
   const [loading, setLoading] = useState(Boolean(id) && !location.state?.result);
   const [error, setError] = useState("");
+  const [similar, setSimilar] = useState([]);
 
   useEffect(() => {
 
@@ -51,6 +52,18 @@ export default function Result() {
       .finally(() => setLoading(false));
 
   }, [id, location.state]);
+
+  useEffect(() => {
+
+    if (!id) {
+      return;
+    }
+
+    getSimilarContracts(id)
+      .then(setSimilar)
+      .catch(() => setSimilar([]));
+
+  }, [id]);
 
   useEffect(() => {
 
@@ -223,6 +236,53 @@ export default function Result() {
           </p>
 
         </div>
+
+        {similar.length > 0 && (
+
+          <div className="card mt-20">
+
+            <div className="flex items-center gap-4">
+
+              <div className="rounded-2xl bg-indigo-100 p-4">
+                <Sparkles className="text-indigo-600" size={28} />
+              </div>
+
+              <div>
+                <p className="text-slate-500">Semantic Search</p>
+                <h2 className="text-3xl font-black">Similar Contracts</h2>
+              </div>
+
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+
+              {similar.map((match) => (
+
+                <Link
+
+                  key={match.contract_id}
+
+                  to={`/result/${match.contract_id}`}
+
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-indigo-300"
+
+                >
+
+                  <p className="truncate font-bold">{match.filename}</p>
+
+                  <p className="mt-2 text-sm text-slate-500">
+                    {Math.round(match.score * 100)}% similar
+                  </p>
+
+                </Link>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        )}
 
       </div>
 

@@ -11,7 +11,10 @@ flowchart LR
     Redis --> Worker[Celery Worker]
     Worker --> NLP[NLP Pipeline]
     NLP --> DB
+    Worker -- embed summary --> Pinecone[(Pinecone Vector DB)]
     FE -- poll status --> API
+    FE -- similar contracts --> API
+    API -- query --> Pinecone
 ```
 
 ## Request flow: uploading a contract
@@ -58,6 +61,18 @@ extracted_text
 
 `contract_analyzer.py` composes these three into the single result object
 returned by the API and stored on the `Contract` row.
+
+### Semantic search (`src/nlp/vector_store.py`)
+
+After a contract is successfully analyzed, its summary is embedded
+(`all-MiniLM-L6-v2`) and upserted into a Pinecone index under a
+`user_contracts` namespace, tagged with `user_id` so one user's contracts
+are never surfaced to another. `GET /contracts/{id}/similar` queries
+Pinecone for that contract's nearest neighbors (filtered to the same
+user) and the Result page shows them as a "Similar Contracts" panel.
+Indexing and querying both fail soft — if `PINECONE_API_KEY` isn't set
+or Pinecone is unreachable, the feature just returns an empty list
+rather than breaking analysis or the result page.
 
 ### Text extraction and scanned PDFs
 

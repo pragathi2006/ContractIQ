@@ -5,6 +5,7 @@ from src.celery_app import celery_app
 from src.pdf_parser import extract_text_with_ocr_fallback
 from src.logger import logger
 from src.nlp.contract_analyzer import analyze_contract
+from src.nlp import vector_store
 from src.db import SessionLocal
 from src.models import Contract
 
@@ -14,7 +15,8 @@ def _save_contract_result(task_id, *, status, risk_level=None, risk_score=None,
     """Persists the outcome of a background analysis to the Contract row
     created when the upload was accepted, so the dashboard/history pages
     can show real data instead of the in-memory Celery result (which
-    expires after an hour)."""
+    expires after an hour). Returns the contract's (id, user_id) on
+    success so the caller can index it for semantic search."""
 
     db = SessionLocal()
 
@@ -23,7 +25,7 @@ def _save_contract_result(task_id, *, status, risk_level=None, risk_score=None,
 
         if not contract:
             logger.warning(f"No Contract row found for task_id={task_id}")
-            return
+            return None
 
         contract.status = status
         contract.risk_level = risk_level
@@ -32,6 +34,8 @@ def _save_contract_result(task_id, *, status, risk_level=None, risk_score=None,
         contract.error = error
 
         db.commit()
+
+        return contract.id, contract.user_id, contract.filename
 
     finally:
         db.close()
@@ -111,13 +115,17 @@ def process_pdf(self, file_path):
 
         logger.info("Contract analyzed successfully.")
 
-        _save_contract_result(
+        saved = _save_contract_result(
             self.request.id,
             status="SUCCESS",
             risk_level=analysis["risk"]["risk_level"],
             risk_score=analysis["risk"]["risk_score"],
             result=result,
         )
+
+        if saved:
+            contract_id, user_id, filename = saved
+            vector_store.index_contract(contract_id, user_id, filename, analysis["summary"])
 
         return result
 

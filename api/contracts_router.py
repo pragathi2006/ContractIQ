@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.auth import get_current_user
 from src.db import get_db
 from src.models import Contract, User
+from src.nlp import vector_store
 from src.schemas import ContractDetail, ContractSummary
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
@@ -60,3 +61,29 @@ def get_contract(
         error=contract.error,
         result=result,
     )
+
+
+@router.get("/{contract_id}/similar")
+def get_similar_contracts(
+    contract_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Semantically similar past contracts, via vector search over
+    embeddings of each contract's summary (see src/nlp/vector_store.py).
+    Returns an empty list if Pinecone isn't configured or reachable,
+    rather than failing the request."""
+
+    contract = (
+        db.query(Contract)
+        .filter(Contract.id == contract_id, Contract.user_id == current_user.id)
+        .first()
+    )
+
+    if not contract:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Contract not found.",
+        )
+
+    return vector_store.find_similar(contract_id, current_user.id)

@@ -9,3 +9,8 @@ export const getContract = async (id) => {
   const response = await api.get(`/contracts/${id}`);
   return response.data;
 };
+
+export const getSimilarContracts = async (id) => {
+  const response = await api.get(`/contracts/${id}/similar`);
+  return response.data;
+};
