@@ -1,12 +1,20 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, status
+import os
+import uuid
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from celery.result import AsyncResult
-import os
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.logger import logger
 from src.tasks import process_pdf
 from src.celery_app import celery_app
+from src.db import Base, engine
+from src.auth import get_current_user
+from src.models import User  # noqa: F401 - registers the table on Base.metadata
+from api.auth_router import router as auth_router
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="ContractIQ API",
@@ -23,6 +31,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
 
 @app.get(
     "/",
@@ -45,7 +55,10 @@ def home():
     summary="Upload Contract",
     description="Uploads a PDF contract and starts background processing using Celery."
 )
-async def upload_contract(file: UploadFile = File(...)):
+async def upload_contract(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
 
     if not file.filename.lower().endswith(".pdf"):
         logger.warning("Non-PDF file upload attempted.")
@@ -58,12 +71,15 @@ async def upload_contract(file: UploadFile = File(...)):
     upload_folder = "uploads"
     os.makedirs(upload_folder, exist_ok=True)
 
-    file_path = os.path.join(upload_folder, file.filename)
+    # Store under a random name to avoid collisions/path traversal from the
+    # original filename, while still returning it for display.
+    stored_name = f"{uuid.uuid4().hex}.pdf"
+    file_path = os.path.join(upload_folder, stored_name)
 
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    logger.info(f"Saved file: {file.filename}")
+    logger.info(f"Saved file: {file.filename} -> {stored_name} (user: {current_user.email})")
 
     task = process_pdf.delay(file_path)
 
@@ -87,7 +103,7 @@ async def upload_contract(file: UploadFile = File(...)):
     summary="Check Task Status",
     description="Returns the processing status and result of a background task."
 )
-def get_task(task_id: str):
+def get_task(task_id: str, current_user: User = Depends(get_current_user)):
 
     task = AsyncResult(task_id, app=celery_app)
 
