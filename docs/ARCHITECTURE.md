@@ -59,6 +59,18 @@ extracted_text
 `contract_analyzer.py` composes these three into the single result object
 returned by the API and stored on the `Contract` row.
 
+### Text extraction and scanned PDFs
+
+`src/pdf_parser.py` extracts text with `pdfplumber`. If a PDF has no
+extractable text layer (e.g. a scanned/image-only document), the task
+fails with a clear "may be scanned" error rather than silently returning
+nothing.
+
+`src/ocr.py` implements an OCR fallback (`pytesseract` + `pdf2image`)
+for exactly this case, but **it isn't wired into the pipeline yet** —
+it exists as a standalone module, not called from `src/tasks.py`. Doing
+so is the natural next step for supporting scanned contracts.
+
 ## Auth
 
 JWT (HS256), 7-day expiry, bcrypt-hashed passwords. `get_current_user` is
