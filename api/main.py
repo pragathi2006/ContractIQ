@@ -5,14 +5,16 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from celery.result import AsyncResult
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 from src.logger import logger
 from src.tasks import process_pdf
 from src.celery_app import celery_app
-from src.db import Base, engine
+from src.db import Base, engine, get_db
 from src.auth import get_current_user
-from src.models import User  # noqa: F401 - registers the table on Base.metadata
+from src.models import Contract, User
 from api.auth_router import router as auth_router
+from api.contracts_router import router as contracts_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -33,6 +35,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(contracts_router)
 
 @app.get(
     "/",
@@ -58,6 +61,7 @@ def home():
 async def upload_contract(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
 
     if not file.filename.lower().endswith(".pdf"):
@@ -81,7 +85,21 @@ async def upload_contract(
 
     logger.info(f"Saved file: {file.filename} -> {stored_name} (user: {current_user.email})")
 
-    task = process_pdf.delay(file_path)
+    # Generate the task ID ourselves and commit the Contract row before
+    # enqueueing, so the row is guaranteed to exist by the time a worker
+    # (possibly on another machine) picks up the task and looks it up.
+    task_id = uuid.uuid4().hex
+
+    contract = Contract(
+        user_id=current_user.id,
+        task_id=task_id,
+        filename=file.filename,
+        status="PROCESSING",
+    )
+    db.add(contract)
+    db.commit()
+
+    task = process_pdf.apply_async(args=[file_path], task_id=task_id)
 
     logger.info(f"Background task created: {task.id}")
 
