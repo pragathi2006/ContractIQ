@@ -88,12 +88,17 @@ automated contract analysis tool.
 ## Why not fine-tune a transformer
 
 The original CUAD paper fine-tunes RoBERTa/DeBERTa for extractive QA,
-which needs a GPU and hours of training. This project trains and runs
-entirely on CPU, so a frozen-embedding + linear-classifier approach was
-chosen to keep the whole pipeline (including retraining) practical
-without dedicated hardware. A fine-tuned transformer would likely improve
-accuracy meaningfully; it's the natural next step if GPU compute becomes
-available.
+which needs a GPU and hours of training. Earlier BERT fine-tuning
+experiments on this same dataset are in
+`notebooks/bert-training.ipynb` (both a sequence-classification and an
+extractive-QA approach, via HuggingFace `transformers`). This project's
+pipeline trains and runs entirely on CPU, so the production classifier
+instead uses a frozen-embedding + linear-classifier approach — building
+on the embedding-based prototype in
+`notebooks/semantic-search-pipeline.ipynb` — to keep the whole pipeline
+(including retraining) practical without dedicated hardware. A
+fine-tuned transformer would likely improve accuracy meaningfully; it's
+the natural next step if GPU compute becomes available.
 
 ## Retraining
 

@@ -64,6 +64,20 @@ cd frontend && npm install && npm run dev
 
 Then open http://localhost:5173.
 
+## Research notebooks
+
+Before landing on the production approach, `notebooks/` documents earlier
+hands-on experimentation on the same CUAD dataset:
+
+- **`bert-training.ipynb`** — fine-tuning BERT-family transformers
+  (`AutoModelForSequenceClassification`, `AutoModelForQuestionAnswering`)
+  directly on CUAD via HuggingFace `transformers`/`datasets`, including an
+  extractive-QA approach matching the original CUAD paper's methodology.
+- **`semantic-search-pipeline.ipynb`** — embedding CUAD clauses with
+  `sentence-transformers` and prototyping similarity search over them —
+  the direct precursor to the embedding approach the production clause
+  classifier (`training/train_clause_model.py`) is built on.
+
 ## Project structure
 
 ```
