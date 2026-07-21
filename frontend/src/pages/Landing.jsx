@@ -11,10 +11,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Landing() {
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-900">
@@ -127,28 +129,52 @@ export default function Landing() {
 
           <div className="hidden items-center gap-4 lg:flex">
 
-            <Link
-              to="/login"
-              className="rounded-xl px-5 py-3 font-semibold transition hover:bg-slate-100"
-            >
+            {isAuthenticated ? (
 
-              Login
+              <Link
+                to="/dashboard"
+                className="group flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:bg-indigo-700"
+              >
 
-            </Link>
+                Go to Dashboard
 
-            <Link
-              to="/register"
-              className="group flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:bg-indigo-700"
-            >
+                <ArrowRight
+                  size={18}
+                  className="transition group-hover:translate-x-1"
+                />
 
-              Get Started
+              </Link>
 
-              <ArrowRight
-                size={18}
-                className="transition group-hover:translate-x-1"
-              />
+            ) : (
 
-            </Link>
+              <>
+
+                <Link
+                  to="/login"
+                  className="rounded-xl px-5 py-3 font-semibold transition hover:bg-slate-100"
+                >
+
+                  Login
+
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="group flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-1 hover:bg-indigo-700"
+                >
+
+                  Get Started
+
+                  <ArrowRight
+                    size={18}
+                    className="transition group-hover:translate-x-1"
+                  />
+
+                </Link>
+
+              </>
+
+            )}
 
           </div>
 
@@ -183,16 +209,35 @@ export default function Landing() {
 
             <a href="#about">About</a>
 
-            <Link to="/login">Login</Link>
+            {isAuthenticated ? (
 
-            <Link
-              to="/register"
-              className="rounded-xl bg-indigo-600 py-3 text-center text-white font-semibold"
-            >
+              <Link
+                to="/dashboard"
+                className="rounded-xl bg-indigo-600 py-3 text-center text-white font-semibold"
+              >
 
-              Get Started
+                Go to Dashboard
 
-            </Link>
+              </Link>
+
+            ) : (
+
+              <>
+
+                <Link to="/login">Login</Link>
+
+                <Link
+                  to="/register"
+                  className="rounded-xl bg-indigo-600 py-3 text-center text-white font-semibold"
+                >
+
+                  Get Started
+
+                </Link>
+
+              </>
+
+            )}
 
           </div>
 
@@ -806,29 +851,51 @@ export default function Landing() {
 
           <div className="mt-12 flex flex-wrap justify-center gap-6">
 
-            <Link
+            {isAuthenticated ? (
 
-              to="/register"
+              <Link
 
-              className="rounded-2xl bg-white px-8 py-5 text-lg font-bold text-indigo-700 transition hover:-translate-y-1"
+                to="/upload"
 
-            >
+                className="rounded-2xl bg-white px-8 py-5 text-lg font-bold text-indigo-700 transition hover:-translate-y-1"
 
-              Start Free
+              >
 
-            </Link>
+                Upload a Contract
 
-            <Link
+              </Link>
 
-              to="/login"
+            ) : (
 
-              className="rounded-2xl border border-white/50 px-8 py-5 text-lg font-bold transition hover:bg-white/10"
+              <>
 
-            >
+                <Link
 
-              Login
+                  to="/register"
 
-            </Link>
+                  className="rounded-2xl bg-white px-8 py-5 text-lg font-bold text-indigo-700 transition hover:-translate-y-1"
+
+                >
+
+                  Start Free
+
+                </Link>
+
+                <Link
+
+                  to="/login"
+
+                  className="rounded-2xl border border-white/50 px-8 py-5 text-lg font-bold transition hover:bg-white/10"
+
+                >
+
+                  Login
+
+                </Link>
+
+              </>
+
+            )}
 
           </div>
 
