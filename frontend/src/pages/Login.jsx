@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import {
@@ -10,10 +10,13 @@ import {
   EyeOff,
   ArrowRight
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -21,13 +24,36 @@ export default function Login() {
 
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const [error, setError] = useState("");
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleLogin = async (e) => {
 
     e.preventDefault();
 
-    // Later we'll connect FastAPI login API
+    setError("");
+    setSubmitting(true);
 
-    navigate("/dashboard");
+    try {
+
+      await login(email, password);
+
+      const redirectTo = location.state?.from?.pathname || "/dashboard";
+
+      navigate(redirectTo, { replace: true });
+
+    } catch (err) {
+
+      setError(
+        err.response?.data?.detail || "Unable to log in. Please try again."
+      );
+
+    } finally {
+
+      setSubmitting(false);
+
+    }
 
   };
 
@@ -263,6 +289,16 @@ export default function Login() {
 
               </div>
 
+              {error && (
+
+                <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-600">
+
+                  {error}
+
+                </p>
+
+              )}
+
               <motion.button
 
                 whileHover={{
@@ -275,11 +311,13 @@ export default function Login() {
 
                 type="submit"
 
-                className="primary-btn w-full justify-center text-lg"
+                disabled={submitting}
+
+                className="primary-btn w-full justify-center text-lg disabled:opacity-60"
 
               >
 
-                Login
+                {submitting ? "Logging in..." : "Login"}
 
                 <ArrowRight size={20} />
 
