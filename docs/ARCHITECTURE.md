@@ -61,15 +61,16 @@ returned by the API and stored on the `Contract` row.
 
 ### Text extraction and scanned PDFs
 
-`src/pdf_parser.py` extracts text with `pdfplumber`. If a PDF has no
-extractable text layer (e.g. a scanned/image-only document), the task
-fails with a clear "may be scanned" error rather than silently returning
-nothing.
-
-`src/ocr.py` implements an OCR fallback (`pytesseract` + `pdf2image`)
-for exactly this case, but **it isn't wired into the pipeline yet** —
-it exists as a standalone module, not called from `src/tasks.py`. Doing
-so is the natural next step for supporting scanned contracts.
+`src/pdf_parser.py` tries `pdfplumber` first (fast, exact text). If a PDF
+has no extractable text layer (a scanned/image-only document), it falls
+back to OCR via `src/ocr.py` (`pytesseract` + `pdf2image`,
+`extract_text_with_ocr_fallback`), so scanned contracts are still
+analyzed instead of failing outright. Which path was used is recorded on
+the result (`statistics.extraction_method: "text" | "ocr"`) and shown in
+the UI. The Docker image installs `tesseract-ocr` and `poppler-utils` so
+this works out of the box in the container; running natively needs both
+on `PATH` (or `TESSERACT_CMD`/`POPPLER_PATH` set — see
+[docs/SETUP.md](SETUP.md)).
 
 ## Auth
 

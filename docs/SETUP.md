@@ -72,6 +72,8 @@ minutes on CPU. See [training/README.md](../training/README.md) and
 | `DATABASE_URL` | No (defaults to local SQLite) | SQLAlchemy connection string |
 | `PINECONE_API_KEY` | No | Only used by `src/pinecone_db.py` and the semantic-search scripts |
 | `CELERY_BROKER_URL` / `CELERY_RESULT_BACKEND` | No (defaults to `redis://localhost:6379/0`) | Overridden automatically inside Docker Compose |
+| `TESSERACT_CMD` | No (Docker has it on `PATH`) | Path to the `tesseract` executable, for native/non-Docker OCR |
+| `POPPLER_PATH` | No (Docker has it on `PATH`) | Path to poppler's `bin/` folder, for native/non-Docker OCR |
 | `VITE_API_URL` (frontend) | No (defaults to `http://127.0.0.1:8000`) | Point the frontend at a different API host |
 
 ## Common issues
@@ -81,6 +83,10 @@ minutes on CPU. See [training/README.md](../training/README.md) and
 - **Upload hangs on "Processing"** — the Celery worker isn't running or
   can't reach Redis. Check `docker compose logs worker` (Docker) or that
   `redis-server` is running (native).
+- **Scanned PDF fails even though it should fall back to OCR** — running
+  natively, this usually means `tesseract` or `poppler` isn't installed
+  or isn't on `PATH`. Set `TESSERACT_CMD`/`POPPLER_PATH` explicitly, or
+  use Docker, which has both preinstalled.
 - **Docker build is very slow / image is huge** — make sure you're
   building with the current `Dockerfile`, which installs a CPU-only
   torch build. The default PyPI wheel pulls in several GB of NVIDIA CUDA

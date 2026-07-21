@@ -30,12 +30,12 @@ def extract_text_from_scanned_pdf(pdf_path):
         page_text = pytesseract.image_to_string(image)
         text += page_text + "\n"
 
-    return text
+    return text, len(images)
 
 
 if __name__ == "__main__":
     pdf_path = "data/Extracted_Questions.pdf"
 
-    extracted_text = extract_text_from_scanned_pdf(pdf_path)
+    extracted_text, pages = extract_text_from_scanned_pdf(pdf_path)
 
     print(extracted_text)

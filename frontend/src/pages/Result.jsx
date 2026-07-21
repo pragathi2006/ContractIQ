@@ -16,7 +16,8 @@ import { getContract } from "../api/contracts";
 import {
   FileText,
   Clock,
-  Hash
+  Hash,
+  ScanText
 } from "lucide-react";
 
 export default function Result() {
@@ -145,7 +146,7 @@ export default function Result() {
         </div>
 
 
-        <div className="grid gap-6 mt-20 md:grid-cols-3">
+        <div className="grid gap-6 mt-20 md:grid-cols-2 lg:grid-cols-4">
 
           <StatCard
 
@@ -174,6 +175,16 @@ export default function Result() {
             value={`${statistics.processing_time_seconds || 0}s`}
 
             icon={<Clock size={24} />}
+
+          />
+
+          <StatCard
+
+            title="Text Source"
+
+            value={statistics.extraction_method === "ocr" ? "OCR" : "Native"}
+
+            icon={<ScanText size={24} />}
 
           />
 

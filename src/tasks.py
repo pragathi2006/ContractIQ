@@ -2,7 +2,7 @@ import json
 import time
 
 from src.celery_app import celery_app
-from src.pdf_parser import extract_text
+from src.pdf_parser import extract_text_with_ocr_fallback
 from src.logger import logger
 from src.nlp.contract_analyzer import analyze_contract
 from src.db import SessionLocal
@@ -54,12 +54,12 @@ def process_pdf(self, file_path):
             }
         )
 
-        extracted_text, total_pages = extract_text(file_path)
+        extracted_text, total_pages, extraction_method = extract_text_with_ocr_fallback(file_path)
 
         if not extracted_text or not extracted_text.strip():
             raise ValueError(
-                "No readable text found in this PDF. It may be scanned, "
-                "corrupted, or empty."
+                "No readable text found in this PDF, even after OCR. It "
+                "may be corrupted or empty."
             )
 
         self.update_state(
@@ -87,6 +87,7 @@ def process_pdf(self, file_path):
                 "pages": total_pages,
                 "characters": len(extracted_text),
                 "processing_time_seconds": round(time.time() - started_at, 2),
+                "extraction_method": extraction_method,
             },
 
             "summary": analysis["summary"],

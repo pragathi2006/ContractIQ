@@ -7,8 +7,9 @@ clause classifier trained on a real legal dataset, not keyword matching.
 ## What it does
 
 1. **Upload** a PDF contract through the web app.
-2. A **Celery worker** picks up the file, extracts its text, and runs it
-   through the analysis pipeline:
+2. A **Celery worker** picks up the file and extracts its text —
+   `pdfplumber` first, falling back to OCR (Tesseract + pdf2image) for
+   scanned/image-only PDFs — then runs it through the analysis pipeline:
    - **Entity extraction** — people, organizations, dates, and money amounts
      (spaCy NER).
    - **Clause detection** — a multi-label classifier trained on
@@ -31,7 +32,8 @@ clause classifier trained on a real legal dataset, not keyword matching.
 ## Tech stack
 
 **Backend** — FastAPI, SQLAlchemy (SQLite), Celery + Redis, JWT auth
-(PyJWT + bcrypt), spaCy, sentence-transformers, scikit-learn, pdfplumber
+(PyJWT + bcrypt), spaCy, sentence-transformers, scikit-learn, pdfplumber,
+Tesseract OCR + pdf2image (fallback for scanned PDFs)
 
 **Frontend** — React 19, Vite, Tailwind CSS 4, Framer Motion, React Router
 
