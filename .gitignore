@@ -41,3 +41,6 @@ dist/
 
 # Logs
 *.log
+
+# Local test fixtures
+test_pdfs/
