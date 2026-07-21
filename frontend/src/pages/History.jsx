@@ -1,10 +1,25 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import RecentContracts from "../components/RecentContracts";
+import { listContracts } from "../api/contracts";
 
 export default function History() {
+
+  const [contracts, setContracts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    listContracts()
+      .then(setContracts)
+      .catch((err) => console.error("Failed to load contracts:", err))
+      .finally(() => setLoading(false));
+
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#F7F8FC] relative overflow-hidden">
 
@@ -33,7 +48,7 @@ export default function History() {
         </motion.div>
 
         <div className="mt-16 max-w-4xl">
-          <RecentContracts />
+          <RecentContracts contracts={contracts} loading={loading} showViewAll={false} />
         </div>
 
       </div>
