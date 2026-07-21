@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
-import { ShieldCheck, Bell } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShieldCheck, Bell, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
+
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <header className="flex justify-center pt-6">
       <div className="glass w-[94%] max-w-7xl rounded-2xl px-8 py-4 shadow-xl flex items-center justify-between">
@@ -40,10 +50,18 @@ export default function Navbar() {
           <Bell />
 
           <img
-            src="https://ui-avatars.com/api/?name=Y&background=4F46E5&color=fff"
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=4F46E5&color=fff`}
             className="w-11 h-11 rounded-full"
-            alt="avatar"
+            alt={user?.name || "User avatar"}
           />
+
+          <button
+            onClick={handleLogout}
+            title="Logout"
+            className="rounded-xl p-3 text-slate-500 transition hover:bg-slate-100 hover:text-red-500"
+          >
+            <LogOut size={20} />
+          </button>
 
         </div>
 
