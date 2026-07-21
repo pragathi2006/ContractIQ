@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
   AlertTriangle,
-  Brain,
+  ShieldAlert,
   CheckCircle2,
 } from "lucide-react";
 
@@ -11,30 +12,56 @@ import StatCard from "../components/StatCard";
 import RecentContracts from "../components/RecentContracts";
 import ActivityCard from "../components/ActivityCard";
 import Footer from "../components/Footer";
+import { listContracts } from "../api/contracts";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
+
+  const { user } = useAuth();
+
+  const [contracts, setContracts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    listContracts()
+      .then(setContracts)
+      .catch((err) => console.error("Failed to load contracts:", err))
+      .finally(() => setLoading(false));
+
+  }, []);
+
+  const completed = contracts.filter((c) => c.status === "SUCCESS");
+  const highRisk = completed.filter((c) => c.risk_level === "High");
+
+  const averageRisk = completed.length
+    ? Math.round(
+        completed.reduce((sum, c) => sum + (c.risk_score || 0), 0) / completed.length
+      )
+    : 0;
+
   const stats = [
     {
       title: "Contracts",
-      value: "124",
+      value: contracts.length,
       icon: <FileText size={28} />,
       color: "bg-indigo-100 text-indigo-600",
     },
     {
-      title: "Average Risk",
-      value: "24%",
+      title: "Average Risk Score",
+      value: averageRisk,
       icon: <AlertTriangle size={28} />,
       color: "bg-red-100 text-red-500",
     },
     {
-      title: "AI Accuracy",
-      value: "98%",
-      icon: <Brain size={28} />,
-      color: "bg-emerald-100 text-emerald-600",
+      title: "High Risk Contracts",
+      value: highRisk.length,
+      icon: <ShieldAlert size={28} />,
+      color: "bg-amber-100 text-amber-600",
     },
     {
       title: "Completed",
-      value: "118",
+      value: completed.length,
       icon: <CheckCircle2 size={28} />,
       color: "bg-blue-100 text-blue-600",
     },
@@ -61,7 +88,7 @@ export default function Dashboard() {
 
           <h1 className="hero-title">
 
-            Welcome Back 👋
+            Welcome Back{user?.name ? `, ${user.name.split(" ")[0]}` : ""} 👋
 
           </h1>
 
@@ -84,7 +111,7 @@ export default function Dashboard() {
             <StatCard
               key={item.title}
               title={item.title}
-              value={item.value}
+              value={loading ? "-" : item.value}
               icon={item.icon}
               color={item.color}
             />
@@ -99,11 +126,11 @@ export default function Dashboard() {
 
           <div className="lg:col-span-2">
 
-            <RecentContracts />
+            <RecentContracts contracts={contracts} loading={loading} limit={5} />
 
           </div>
 
-          <ActivityCard />
+          <ActivityCard contracts={contracts} loading={loading} />
 
         </div>
 
