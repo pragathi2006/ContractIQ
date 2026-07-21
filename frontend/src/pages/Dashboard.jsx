@@ -19,6 +19,8 @@ export default function Dashboard() {
 
   const { user } = useAuth();
 
+  const firstName = user?.name?.split(" ")[0]?.replace(/^\w/, (c) => c.toUpperCase());
+
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -86,9 +88,9 @@ export default function Dashboard() {
           transition={{ duration: .7 }}
         >
 
-          <h1 className="hero-title">
+          <h1 className="section-title">
 
-            Welcome Back{user?.name ? `, ${user.name.split(" ")[0]}` : ""} 👋
+            Welcome Back{firstName ? `, ${firstName}` : ""} 👋
 
           </h1>
 

@@ -37,7 +37,7 @@ export default function History() {
           transition={{ duration: .7 }}
         >
 
-          <h1 className="hero-title">
+          <h1 className="section-title">
             Contract History
           </h1>
 

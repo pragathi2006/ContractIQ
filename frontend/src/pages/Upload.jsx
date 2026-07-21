@@ -178,7 +178,7 @@ Upload Contract
 
 </div>
 
-<h1 className="hero-title mt-8">
+<h1 className="section-title mt-8">
 
 Upload Your
 

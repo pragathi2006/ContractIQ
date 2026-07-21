@@ -104,7 +104,7 @@ export default function Result() {
 
         >
 
-          <h1 className="hero-title">
+          <h1 className="section-title">
 
             Analysis
 

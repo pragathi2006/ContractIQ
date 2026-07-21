@@ -30,13 +30,6 @@
     padding: 100px 40px;
   }
 
-  .hero-title {
-    font-size: 72px;
-    line-height: 1.05;
-    font-weight: 900;
-    letter-spacing: -2px;
-  }
-
   .section-title {
     font-size: 48px;
     font-weight: 800;
@@ -226,10 +219,6 @@
 }
 
 @media (max-width: 900px) {
-  .hero-title {
-    font-size: 48px;
-  }
-
   .section-title {
     font-size: 36px;
   }
