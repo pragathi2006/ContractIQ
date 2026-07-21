@@ -8,8 +8,6 @@ export default function RiskCard({ risk }) {
   const score = risk?.risk_score ?? 0;
   const reasons = risk?.reasons || [];
 
-  // risk_score is an open-ended additive score (not a 0-100 scale), so cap
-  // the ring fill for display purposes while still showing the raw number.
   const percentage = Math.min(score, 100);
 
   let color = "#10B981";

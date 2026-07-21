@@ -99,7 +99,6 @@ export default function Upload() {
 <div className="blob blob2"></div>
 <div className="blob blob3"></div>
 
-{/* NAVBAR */}
 
 <div className="w-full flex justify-center pt-6">
 
@@ -147,7 +146,6 @@ Dashboard
 
 </div>
 
-{/* CONTENT */}
 
 <div className="section">
 
@@ -202,7 +200,6 @@ extract entities and generate a professional report.
 
 </motion.div>
 
-{/* UPLOAD CARD */}
 
 <motion.div
 
@@ -329,7 +326,6 @@ Supported Format: PDF
 </p>
 
 </div>
-          {/* SELECTED FILE */}
 
           {selectedFile && (
 
@@ -391,7 +387,6 @@ Supported Format: PDF
 
           )}
 
-          {/* AI FEATURES */}
 
           <div className="mt-16 grid gap-6 md:grid-cols-3">
 
@@ -444,7 +439,6 @@ Supported Format: PDF
 
           </div>
 
-          {/* ANALYZE BUTTON */}
 
 <motion.div
   whileHover={{ scale: 1.02 }}
@@ -473,7 +467,6 @@ Supported Format: PDF
 </motion.div>
           
 
-          {/* WORKFLOW */}
 
           <div className="mt-24">
 

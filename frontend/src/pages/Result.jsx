@@ -25,8 +25,6 @@ export default function Result() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Fresh analysis lands here via router state; viewing a past contract
-  // (from Dashboard/History) lands here via /result/:id and fetches it.
   const [result, setResult] = useState(location.state?.result || null);
   const [loading, setLoading] = useState(Boolean(id) && !location.state?.result);
   const [error, setError] = useState("");
@@ -92,7 +90,6 @@ export default function Result() {
 
       <div className="section">
 
-        {/* PAGE TITLE */}
 
         <motion.div
 
@@ -124,7 +121,6 @@ export default function Result() {
 
         </motion.div>
 
-        {/* TOP */}
 
         <div className="grid gap-8 lg:grid-cols-3">
 
@@ -148,7 +144,6 @@ export default function Result() {
 
         </div>
 
-        {/* STATISTICS */}
 
         <div className="grid gap-6 mt-20 md:grid-cols-3">
 
@@ -184,7 +179,6 @@ export default function Result() {
 
         </div>
 
-        {/* ENTITIES + CLAUSES */}
 
         <div className="grid gap-8 mt-20 lg:grid-cols-2">
 
@@ -202,7 +196,6 @@ export default function Result() {
 
         </div>
 
-        {/* PREVIEW */}
 
         <div className="card mt-20">
 

@@ -104,7 +104,6 @@ export default function Register() {
 
       >
 
-        {/* LEFT PANEL */}
 
         <div className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-600 p-16 text-white">
 
@@ -175,7 +174,6 @@ export default function Register() {
 
         </div>
 
-        {/* RIGHT PANEL */}
 
         <div className="flex items-center justify-center p-10 lg:p-16">
 

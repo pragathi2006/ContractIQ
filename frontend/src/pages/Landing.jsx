@@ -23,7 +23,6 @@ export default function Landing() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-900">
 
-      {/* BACKGROUND BLOBS */}
 
       <motion.div
         animate={{
@@ -64,7 +63,6 @@ export default function Landing() {
         className="pointer-events-none absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-emerald-300/20 blur-[120px]"
       />
 
-      {/* NAVBAR */}
 
       <header className="fixed left-0 right-0 top-0 z-50 flex justify-center pt-5">
 
@@ -193,7 +191,6 @@ export default function Landing() {
 
       </header>
 
-      {/* MOBILE MENU */}
 
       {menuOpen && (
 
@@ -247,11 +244,9 @@ export default function Landing() {
 
       )}
 
-      {/* HERO */}
 
       <section className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-8 pt-32 lg:flex-row">
 
-        {/* LEFT */}
 
         <motion.div
           initial={{ x: -80, opacity: 0 }}
@@ -354,7 +349,6 @@ export default function Landing() {
           </div>
 
         </motion.div>
-                {/* RIGHT */}
 
         <motion.div
           initial={{ x: 80, opacity: 0 }}
@@ -363,7 +357,6 @@ export default function Landing() {
           className="relative mt-20 flex flex-1 justify-center lg:mt-0"
         >
 
-          {/* Main Dashboard */}
 
           <motion.div
             whileHover={{
@@ -375,7 +368,6 @@ export default function Landing() {
             className="glass relative mt-20 w-full max-w-lg rounded-[35px] border border-white/60 bg-white/75 p-8 shadow-[0_40px_90px_rgba(0,0,0,.15)] backdrop-blur-xl"
           >
 
-            {/* Header */}
 
             <div className="flex items-center justify-between">
 
@@ -406,7 +398,6 @@ export default function Landing() {
 
             </div>
 
-            {/* Risk */}
 
             <div className="mt-8 rounded-3xl bg-gradient-to-r from-indigo-500 to-blue-500 p-6 text-white">
 
@@ -438,7 +429,6 @@ export default function Landing() {
 
             </div>
 
-            {/* Summary */}
 
             <div className="mt-8 rounded-2xl bg-slate-50 p-5">
 
@@ -459,7 +449,6 @@ export default function Landing() {
 
             </div>
 
-            {/* Clause Pills */}
 
             <div className="mt-8 flex flex-wrap gap-3">
 
@@ -486,7 +475,6 @@ export default function Landing() {
 
             </div>
 
-            {/* Statistics */}
 
             <div className="mt-10 grid grid-cols-2 gap-4">
 
@@ -540,7 +528,6 @@ export default function Landing() {
         </motion.div>
 
       </section>
-            {/* FEATURES */}
 
       <section
         id="features"
@@ -655,7 +642,6 @@ export default function Landing() {
 
       </section>
 
-      {/* WORKFLOW */}
 
       <section
         id="workflow"
@@ -743,7 +729,6 @@ export default function Landing() {
 
       </section>
 
-      {/* CTA */}
 
       <section
         id="about"
@@ -829,7 +814,6 @@ export default function Landing() {
 
       </section>
 
-      {/* FOOTER */}
 
       <footer
         id="contact"

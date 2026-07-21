@@ -75,7 +75,6 @@ export default function Login() {
 
       >
 
-        {/* LEFT */}
 
         <div className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-600 p-16 text-white">
 
@@ -149,7 +148,6 @@ export default function Login() {
 
         </div>
 
-        {/* RIGHT */}
 
         <div className="flex items-center justify-center p-10 lg:p-16">
 
@@ -325,7 +323,6 @@ export default function Login() {
 
             </form>
 
-            {/* Divider */}
 
             <div className="my-8 flex items-center">
 

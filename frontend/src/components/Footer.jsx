@@ -9,7 +9,6 @@ export default function Footer() {
 
         <div className="grid gap-10 lg:grid-cols-4">
 
-          {/* Logo */}
 
           <div>
 
@@ -49,7 +48,6 @@ export default function Footer() {
 
           </div>
 
-          {/* Product */}
 
           <div>
 
@@ -89,7 +87,6 @@ export default function Footer() {
 
           </div>
 
-          {/* Company */}
 
           <div>
 
@@ -113,7 +110,6 @@ export default function Footer() {
 
           </div>
 
-          {/* Contact */}
 
           <div>
 

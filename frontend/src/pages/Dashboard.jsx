@@ -80,7 +80,6 @@ export default function Dashboard() {
 
       <div className="section">
 
-        {/* HERO */}
 
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -104,7 +103,6 @@ export default function Dashboard() {
 
         </motion.div>
 
-        {/* STATS */}
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 mt-16">
 
@@ -122,7 +120,6 @@ export default function Dashboard() {
 
         </div>
 
-        {/* CONTENT */}
 
         <div className="grid lg:grid-cols-3 gap-8 mt-20">
 
