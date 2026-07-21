@@ -60,6 +60,10 @@ export default function ClauseCard({ clauses = [] }) {
 
             const keyword = typeof clause === "object" ? clause.matched_keyword : null;
 
+            const matchedText = typeof clause === "object" ? clause.matched_text : null;
+
+            const confidence = typeof clause === "object" ? clause.confidence : null;
+
             return (
 
               <div
@@ -70,35 +74,59 @@ export default function ClauseCard({ clauses = [] }) {
 
               >
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-start justify-between gap-4">
 
-                  <CheckCircle2
+                  <div className="flex items-start gap-4">
 
-                    className="text-emerald-500"
+                    <CheckCircle2
 
-                    size={22}
+                      className="mt-1 shrink-0 text-emerald-500"
 
-                  />
+                      size={22}
 
-                  <div>
+                    />
 
-                    <span className="font-semibold text-lg">
+                    <div>
 
-                      {name}
+                      <span className="font-semibold text-lg">
+
+                        {name}
+
+                      </span>
+
+                      {keyword && (
+
+                        <p className="mt-1 text-sm text-slate-500">
+
+                          Matched keyword: "{keyword}"
+
+                        </p>
+
+                      )}
+
+                      {matchedText && (
+
+                        <p className="mt-1 text-sm italic text-slate-500">
+
+                          "{matchedText}"
+
+                        </p>
+
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  {confidence !== null && (
+
+                    <span className="shrink-0 rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">
+
+                      {Math.round(confidence * 100)}%
 
                     </span>
 
-                    {keyword && (
-
-                      <p className="mt-1 text-sm text-slate-500">
-
-                        Matched keyword: "{keyword}"
-
-                      </p>
-
-                    )}
-
-                  </div>
+                  )}
 
                 </div>
 
