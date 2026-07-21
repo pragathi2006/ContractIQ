@@ -109,7 +109,27 @@ def _detect_clauses_ml(text):
                     "confidence": round(float(prob), 3),
                 }
 
+    _resolve_mutually_exclusive(best_by_category, "Cap On Liability", "Uncapped Liability")
+
     return sorted(best_by_category.values(), key=lambda c: -c["confidence"])
+
+
+def _resolve_mutually_exclusive(detected, *category_names):
+    """A liability clause can't be both capped and uncapped. The model
+    sometimes fires on both because it keys off the word "liability"
+    without reliably parsing negation ("shall NOT be capped"); when both
+    fire, keep only whichever the classifier was more confident about."""
+
+    present = [name for name in category_names if name in detected]
+
+    if len(present) < 2:
+        return
+
+    winner = max(present, key=lambda name: detected[name]["confidence"])
+
+    for name in present:
+        if name != winner:
+            del detected[name]
 
 
 def _detect_clauses_keyword_fallback(text):
