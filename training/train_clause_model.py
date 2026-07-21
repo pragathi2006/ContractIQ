@@ -34,15 +34,8 @@ from sklearn.multiclass import OneVsRestClassifier
 
 torch.set_num_threads(os.cpu_count())
 
-# Sentences are clipped to this many characters before embedding -- clause
-# excerpts are short, and this bounds tokenization/inference cost against
-# any long, badly-split "sentences" the rule-based sentencizer produces on
-# dense legal text.
 MAX_SENTENCE_CHARS = 400
 
-# For every positively-labeled sentence, keep at most this many negative
-# (no-category) sentences from the same split. The raw dataset is >90%
-# negative, which wastes most of the embedding budget for little signal.
 NEGATIVE_TO_POSITIVE_RATIO = 3
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,10 +43,6 @@ CUAD_PATH = ROOT / "data" / "data (1)" / "CUADv1.json"
 MODEL_DIR = ROOT / "models" / "clause_classifier"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 
-# Substantive, well-represented clause categories (>=100 contracts each in
-# CUAD). Pure metadata fields (Document Name, Parties, Agreement Date, ...)
-# are excluded since they aren't risk-relevant clauses and are already
-# covered by named-entity extraction.
 SELECTED_CATEGORIES = [
     "Governing Law",
     "Anti-Assignment",
@@ -106,7 +95,6 @@ def build_sentence_dataset(contracts, sentencizer):
             doc = sentencizer(context)
             sents = [(s.start_char, s.end_char, s.text) for s in doc.sents]
 
-            # Pre-compute which char ranges are "positive" for each category.
             positive_spans = {name: [] for name in SELECTED_CATEGORIES}
 
             for qa in paragraph["qas"]:
@@ -124,7 +112,7 @@ def build_sentence_dataset(contracts, sentencizer):
 
                 text = text.strip()
 
-                if len(text) < 15:  # skip near-empty/boilerplate fragments
+                if len(text) < 15:
                     continue
 
                 label_vec = np.zeros(len(SELECTED_CATEGORIES), dtype=np.float32)
@@ -244,9 +232,6 @@ def main():
         for threshold, report in reports.items():
             f.write(f"===== Threshold {threshold} =====\n{report}\n\n")
 
-    # Cache test embeddings/labels/probabilities so future threshold tuning
-    # or error analysis doesn't require re-running the ~10 minute embedding
-    # step from scratch.
     cache_dir = MODEL_DIR / "_cache"
     cache_dir.mkdir(exist_ok=True)
     np.savez_compressed(

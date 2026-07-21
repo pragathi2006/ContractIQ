@@ -28,7 +28,6 @@ def extract_entities(text):
         elif ent.label_ == "MONEY":
             entities["money"].append(ent.text)
 
-    # Remove duplicates
     for key in entities:
         entities[key] = list(set(entities[key]))
 

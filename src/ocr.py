@@ -6,9 +6,8 @@ import pytesseract
 
 from src.logger import logger
 
-# Allow overriding via environment variables; fall back to whatever is on PATH.
 TESSERACT_CMD = os.getenv("TESSERACT_CMD") or shutil.which("tesseract")
-POPPLER_PATH = os.getenv("POPPLER_PATH")  # None lets pdf2image search PATH.
+POPPLER_PATH = os.getenv("POPPLER_PATH")
 
 if TESSERACT_CMD:
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
@@ -22,13 +21,11 @@ else:
 def extract_text_from_scanned_pdf(pdf_path):
     text = ""
 
-    # Convert PDF pages into images
     images = convert_from_path(
         pdf_path,
         poppler_path=POPPLER_PATH
     )
 
-    # OCR each page
     for image in images:
         page_text = pytesseract.image_to_string(image)
         text += page_text + "\n"

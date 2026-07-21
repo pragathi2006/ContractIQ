@@ -75,8 +75,6 @@ async def upload_contract(
     upload_folder = "uploads"
     os.makedirs(upload_folder, exist_ok=True)
 
-    # Store under a random name to avoid collisions/path traversal from the
-    # original filename, while still returning it for display.
     stored_name = f"{uuid.uuid4().hex}.pdf"
     file_path = os.path.join(upload_folder, stored_name)
 
@@ -85,9 +83,6 @@ async def upload_contract(
 
     logger.info(f"Saved file: {file.filename} -> {stored_name} (user: {current_user.email})")
 
-    # Generate the task ID ourselves and commit the Contract row before
-    # enqueueing, so the row is guaranteed to exist by the time a worker
-    # (possibly on another machine) picks up the task and looks it up.
     task_id = uuid.uuid4().hex
 
     contract = Contract(

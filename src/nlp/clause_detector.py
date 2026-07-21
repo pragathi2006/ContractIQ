@@ -7,15 +7,8 @@ from src.logger import logger
 
 MODEL_DIR = Path(__file__).resolve().parent.parent.parent / "models" / "clause_classifier"
 
-# Chosen from training/train_clause_model.py's threshold sweep (see
-# models/clause_classifier/eval_report.txt): 0.75 roughly doubles precision
-# over the default 0.5 (0.23 -> 0.38 micro-avg) while keeping recall high
-# (0.77), which matters more for a risk-screening tool than the marginal
-# extra precision at 0.85.
 DECISION_THRESHOLD = 0.75
 
-# Keyword patterns used only as a fallback when the trained model
-# artifacts (see training/train_clause_model.py) aren't available.
 CLAUSE_PATTERNS = {
     "Confidentiality": ["confidential", "confidentiality", "non-disclosure"],
     "Termination": ["termination", "terminate", "terminated"],
@@ -90,7 +83,6 @@ def _detect_clauses_ml(text):
     embeddings = _embedder.encode(sentences, batch_size=64, convert_to_numpy=True)
     probabilities = _classifier.predict_proba(embeddings)
 
-    # Keep only the highest-confidence matching sentence per category.
     best_by_category = {}
 
     for sent_idx, sent_probs in enumerate(probabilities):

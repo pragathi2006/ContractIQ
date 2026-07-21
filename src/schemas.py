@@ -44,9 +44,6 @@ class ContractSummary(BaseModel):
 
     @field_serializer("created_at")
     def serialize_created_at(self, value: datetime) -> str:
-        # SQLite drops tzinfo on write, even though we always write UTC
-        # (see src/models.py) -- reattach it so the frontend doesn't
-        # misinterpret the timestamp as being in the browser's local zone.
         if value.tzinfo is None:
             value = value.replace(tzinfo=timezone.utc)
         return value.isoformat()

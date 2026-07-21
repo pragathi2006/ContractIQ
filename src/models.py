@@ -23,16 +23,12 @@ class Contract(Base):
     task_id = Column(String, unique=True, index=True, nullable=False)
     filename = Column(String, nullable=False)
 
-    # PROCESSING | SUCCESS | FAILURE
     status = Column(String, nullable=False, default="PROCESSING")
 
     risk_level = Column(String, nullable=True)
     risk_score = Column(Integer, nullable=True)
     error = Column(Text, nullable=True)
 
-    # Full analysis result (statistics/summary/entities/clauses/risk/preview),
-    # stored as JSON text so the schema doesn't have to change every time the
-    # analysis pipeline's output shape does.
     result_json = Column(Text, nullable=True)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
