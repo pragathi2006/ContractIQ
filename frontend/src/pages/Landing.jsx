@@ -3,11 +3,13 @@ import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
-  FileText,
   Brain,
   ScanSearch,
   Menu,
   X,
+  UploadCloud,
+  AlertTriangle,
+  BarChart3,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -33,7 +35,7 @@ export default function Landing() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-indigo-300/30 blur-[120px]"
+        className="pointer-events-none absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-indigo-300/30 blur-[120px]"
       />
 
       <motion.div
@@ -46,7 +48,7 @@ export default function Landing() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute right-0 top-0 h-[450px] w-[450px] rounded-full bg-sky-300/30 blur-[120px]"
+        className="pointer-events-none absolute right-0 top-0 h-[450px] w-[450px] rounded-full bg-sky-300/30 blur-[120px]"
       />
 
       <motion.div
@@ -59,7 +61,7 @@ export default function Landing() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-emerald-300/20 blur-[120px]"
+        className="pointer-events-none absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-emerald-300/20 blur-[120px]"
       />
 
       {/* NAVBAR */}
@@ -312,11 +314,14 @@ export default function Landing() {
 
             </Link>
 
-            <button className="rounded-2xl border border-slate-300 bg-white px-8 py-5 text-lg font-semibold transition hover:-translate-y-1 hover:shadow-lg">
+            <a
+              href="#workflow"
+              className="rounded-2xl border border-slate-300 bg-white px-8 py-5 text-lg font-semibold transition hover:-translate-y-1 hover:shadow-lg"
+            >
 
-              Watch Demo
+              See How It Works
 
-            </button>
+            </a>
 
           </div>
 
@@ -357,85 +362,6 @@ export default function Landing() {
           transition={{ duration: 1 }}
           className="relative mt-20 flex flex-1 justify-center lg:mt-0"
         >
-
-          {/* Floating PDF */}
-
-          <motion.div
-            animate={{
-              y: [0, -12, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-            }}
-            className="absolute left-0 top-8 z-30 w-52 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl backdrop-blur-xl"
-          >
-
-            <div className="flex items-center gap-3">
-
-              <div className="rounded-xl bg-red-100 p-3">
-
-                <FileText className="text-red-500" />
-
-              </div>
-
-              <div>
-
-                <h2 className="font-bold">
-
-                  Employment.pdf
-
-                </h2>
-
-                <p className="text-sm text-slate-500">
-
-                  Uploaded
-
-                </p>
-
-              </div>
-
-            </div>
-
-          </motion.div>
-
-          {/* Floating Risk */}
-
-          <motion.div
-            animate={{
-              y: [0, 10, 0],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-            }}
-            className="absolute right-0 top-28 z-30 w-52 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl backdrop-blur-xl"
-          >
-
-            <p className="text-sm text-slate-500">
-
-              Risk Score
-
-            </p>
-
-            <h1 className="mt-2 text-5xl font-black text-emerald-500">
-
-              18%
-
-            </h1>
-
-            <div className="mt-3 h-2 rounded-full bg-slate-200">
-
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "18%" }}
-                transition={{ duration: 2 }}
-                className="h-2 rounded-full bg-emerald-500"
-              />
-
-            </div>
-
-          </motion.div>
 
           {/* Main Dashboard */}
 
@@ -661,22 +587,22 @@ export default function Landing() {
 
           {[
             {
-              icon:"📄",
+              icon: UploadCloud,
               title:"Smart Upload",
               desc:"Upload PDF contracts instantly with drag & drop."
             },
             {
-              icon:"🧠",
+              icon: Brain,
               title:"AI Summary",
               desc:"Get concise executive summaries in seconds."
             },
             {
-              icon:"⚠️",
+              icon: AlertTriangle,
               title:"Risk Detection",
               desc:"Automatically identify risky clauses."
             },
             {
-              icon:"📊",
+              icon: BarChart3,
               title:"Analytics",
               desc:"View entities, statistics and insights beautifully."
             }
@@ -703,9 +629,9 @@ export default function Landing() {
 
             >
 
-              <div className="text-5xl">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
 
-                {item.icon}
+                <item.icon size={28} />
 
               </div>
 
