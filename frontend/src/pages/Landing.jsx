@@ -526,8 +526,8 @@ export default function Landing() {
 
                 Employment agreement between
                 ABC Technologies and Rahul Sharma.
-                AI detected payment, confidentiality,
-                governing law and termination clauses.
+                AI detected governing law, termination,
+                liability cap and IP ownership clauses.
 
               </p>
 
@@ -538,10 +538,10 @@ export default function Landing() {
             <div className="mt-8 flex flex-wrap gap-3">
 
               {[
-                "Payment",
-                "Confidentiality",
-                "Termination",
                 "Governing Law",
+                "Termination For Convenience",
+                "Cap On Liability",
+                "IP Ownership",
               ].map((item) => (
 
                 <motion.div
