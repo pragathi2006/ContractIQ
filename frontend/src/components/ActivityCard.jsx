@@ -122,7 +122,7 @@ export default function ActivityCard({ contracts = [], loading = false }) {
                 {activity.icon}
               </div>
 
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
 
                 <h3 className="font-bold">
 
@@ -130,7 +130,7 @@ export default function ActivityCard({ contracts = [], loading = false }) {
 
                 </h3>
 
-                <p className="mt-1 text-slate-500 text-sm truncate">
+                <p className="mt-1 truncate text-slate-500 text-sm">
 
                   {activity.description}
 
