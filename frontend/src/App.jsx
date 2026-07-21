@@ -54,6 +54,14 @@ function App() {
             }
           />
           <Route
+            path="/result/:id"
+            element={
+              <ProtectedRoute>
+                <Result />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/history"
             element={
               <ProtectedRoute>

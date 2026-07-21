@@ -1,6 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -10,6 +11,7 @@ import RiskCard from "../components/RiskCard";
 import SummaryCard from "../components/SummaryCard";
 import EntityCard from "../components/EntityCard";
 import ClauseCard from "../components/ClauseCard";
+import { getContract } from "../api/contracts";
 
 import {
   FileText,
@@ -20,20 +22,63 @@ import {
 export default function Result() {
 
   const location = useLocation();
-
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  const result = location.state?.result;
+  // Fresh analysis lands here via router state; viewing a past contract
+  // (from Dashboard/History) lands here via /result/:id and fetches it.
+  const [result, setResult] = useState(location.state?.result || null);
+  const [loading, setLoading] = useState(Boolean(id) && !location.state?.result);
+  const [error, setError] = useState("");
 
   useEffect(() => {
 
-    if (!result) {
-
-      navigate("/upload");
-
+    if (location.state?.result || !id) {
+      return;
     }
 
-  }, [result, navigate]);
+    getContract(id)
+      .then((contract) => {
+
+        if (contract.status !== "SUCCESS" || !contract.result) {
+          setError("This contract hasn't finished analyzing or the analysis failed.");
+          return;
+        }
+
+        setResult(contract.result);
+
+      })
+      .catch(() => setError("Unable to load this contract."))
+      .finally(() => setLoading(false));
+
+  }, [id, location.state]);
+
+  useEffect(() => {
+
+    if (!loading && !result && !error) {
+      navigate("/upload");
+    }
+
+  }, [loading, result, error, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC]">
+        <Loader2 size={48} className="animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6">
+        <div className="card max-w-lg text-center">
+          <h1 className="text-2xl font-black">Couldn't load this result</h1>
+          <p className="mt-4 text-slate-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!result) return null;
 
