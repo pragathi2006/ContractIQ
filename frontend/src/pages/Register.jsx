@@ -11,10 +11,12 @@ import {
   EyeOff,
   ArrowRight
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
 
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,32 +30,51 @@ export default function Register() {
 
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [error, setError] = useState("");
+
+  const [submitting, setSubmitting] = useState(false);
+
   const handleRegister = async (e) => {
 
     e.preventDefault();
 
+    setError("");
+
     if (password !== confirmPassword) {
 
-      alert("Passwords do not match.");
+      setError("Passwords do not match.");
 
       return;
 
     }
 
-    /*
-      Backend Integration
+    if (password.length < 8) {
 
-      await registerUser({
-          name,
-          email,
-          password
-      });
+      setError("Password must be at least 8 characters.");
 
-    */
+      return;
 
-    alert("Account created successfully!");
+    }
 
-    navigate("/login");
+    setSubmitting(true);
+
+    try {
+
+      await register(name, email, password);
+
+      navigate("/dashboard", { replace: true });
+
+    } catch (err) {
+
+      setError(
+        err.response?.data?.detail || "Unable to create account. Please try again."
+      );
+
+    } finally {
+
+      setSubmitting(false);
+
+    }
 
   };
 
@@ -389,7 +410,18 @@ export default function Register() {
                 </div>
 
               </div>
-                            <motion.button
+
+              {error && (
+
+                <p className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-600">
+
+                  {error}
+
+                </p>
+
+              )}
+
+              <motion.button
 
                 whileHover={{
                   scale: 1.02
@@ -401,11 +433,13 @@ export default function Register() {
 
                 type="submit"
 
-                className="primary-btn w-full justify-center text-lg"
+                disabled={submitting}
+
+                className="primary-btn w-full justify-center text-lg disabled:opacity-60"
 
               >
 
-                Create Account
+                {submitting ? "Creating Account..." : "Create Account"}
 
                 <ArrowRight size={20} />
 
