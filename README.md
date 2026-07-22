@@ -40,7 +40,7 @@ search for semantically similar contracts)
 
 **Frontend** — React 19, Vite, Tailwind CSS 4, Framer Motion, React Router
 
-**Infra** — Docker Compose (Redis + API + Celery worker)
+**Infra** — Docker Compose (Redis + API + Celery worker), deployed on AWS EC2
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how these pieces fit
 together, and [docs/MODEL_CARD.md](docs/MODEL_CARD.md) for the clause
@@ -105,4 +105,5 @@ docs/           Architecture, model card, setup guide
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — system design and request flow
 - [docs/MODEL_CARD.md](docs/MODEL_CARD.md) — clause classifier training data, metrics, limitations
-- [docs/SETUP.md](docs/SETUP.md) — local development and deployment guide
+- [docs/SETUP.md](docs/SETUP.md) — local development setup (Docker and native)
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — step-by-step AWS EC2 deployment guide
