@@ -75,6 +75,7 @@ minutes on CPU. See [training/README.md](../training/README.md) and
 | `TESSERACT_CMD` | No (Docker has it on `PATH`) | Path to the `tesseract` executable, for native/non-Docker OCR |
 | `POPPLER_PATH` | No (Docker has it on `PATH`) | Path to poppler's `bin/` folder, for native/non-Docker OCR |
 | `VITE_API_URL` (frontend) | No (defaults to `http://127.0.0.1:8000`) | Point the frontend at a different API host |
+| `CORS_ORIGINS` | No (defaults to `localhost:5173`/`5174`) | Comma-separated list of frontend origins the API accepts requests from. **Must include your deployed frontend's actual URL** (e.g. `http://<EC2_IP>:5173`) or the browser will block login/API calls with a CORS error. |
 
 ## Common issues
 

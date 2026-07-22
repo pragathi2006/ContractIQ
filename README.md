@@ -74,14 +74,19 @@ Then open http://localhost:5173.
 Before landing on the production approach, `notebooks/` documents earlier
 hands-on experimentation on the same CUAD dataset:
 
-- **`bert-training.ipynb`** — fine-tuning BERT-family transformers
+- **`bert-training.ipynb`** — exploratory work loading BERT
   (`AutoModelForSequenceClassification`, `AutoModelForQuestionAnswering`)
-  directly on CUAD via HuggingFace `transformers`/`datasets`, including an
-  extractive-QA approach matching the original CUAD paper's methodology.
+  and the real CUAD dataset via HuggingFace `transformers`/`datasets`,
+  and inspecting CUAD's structure. This is what led to actually
+  fine-tuning DistilBERT on CUAD for real in
+  `training/train_bert_classifier.py` — see
+  [docs/MODEL_CARD.md](docs/MODEL_CARD.md) for that model's real
+  results.
 - **`semantic-search-pipeline.ipynb`** — embedding CUAD clauses with
   `sentence-transformers` and prototyping similarity search over them —
-  the direct precursor to the embedding approach the production clause
-  classifier (`training/train_clause_model.py`) is built on.
+  the direct precursor to both the production clause classifier
+  (`training/train_clause_model.py`) and the live Pinecone-backed
+  "Similar Contracts" feature.
 
 ## Project structure
 

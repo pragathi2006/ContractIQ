@@ -18,11 +18,14 @@ your own terminal — nothing here requires sharing AWS credentials.
 2. Click **Launch Instance**.
 3. **Name**: `contractiq`.
 4. **AMI**: Ubuntu Server 24.04 LTS (should be pre-selected/easy to find).
-5. **Instance type**: `t3.small` (2 GiB RAM). Note: the free-tier
-   `t2.micro`/`t3.micro` (1 GiB RAM) will likely struggle — this app
-   loads several ML models (torch, transformers, sentence-transformers,
-   spaCy) at once. `t3.small` is a few cents/hour, not free-tier, but
-   realistically needed here.
+5. **Instance type**: start with `t2.micro` or `t3.micro` (free-tier
+   eligible, 1 GiB RAM) if you want to stay free — see "Cost and free
+   tier" below. This app loads several ML models at once (torch,
+   transformers, sentence-transformers, spaCy) which makes 1 GiB tight,
+   so if it struggles (crashes, runs out of memory), resize to
+   `t3.small` (2 GiB, ~$15-17/month) via the EC2 console — no need to
+   redo the whole setup, just stop the instance, change instance type,
+   start it again.
 6. **Key pair**: click "Create new key pair", name it `contractiq-key`,
    download the `.pem` file, and keep it somewhere safe — you need it to
    SSH in, and AWS won't let you download it again.
@@ -74,6 +77,14 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 Paste that value in for `JWT_SECRET_KEY`. Add `PINECONE_API_KEY` too if
 you want semantic search working (optional — the app works fine without
 it, that feature just won't return results).
+
+Also set `CORS_ORIGINS` to include your instance's actual public IP —
+without this, the browser will block login/API requests with a CORS
+error once you open the deployed frontend:
+
+```
+CORS_ORIGINS=http://localhost:5173,http://<YOUR_EC2_PUBLIC_IP>:5173
+```
 
 ## 6. Start the backend
 
@@ -137,12 +148,31 @@ cd frontend && npm run build
 (`serve` will pick up the new `dist/` automatically if it's still
 running; restart it if not.)
 
-## Cost note
+## Reliability: will the link stay up?
 
-`t3.small` running continuously costs roughly $15-17/month. **Stop the
-instance** (not the same as terminating it — stopping preserves it, you
-just don't get billed for compute while it's off) from the EC2 console
-when you're not actively demoing it, to avoid ongoing charges. Its
-public IP will change when you stop/start it unless you allocate an
-Elastic IP (also free while attached to a running instance, small
-hourly charge while unattached).
+Both containers (`api`, `worker`) and Redis now have `restart:
+unless-stopped` set in `docker-compose.yml` — if a container crashes
+(e.g. an out-of-memory kill on a small instance) or the EC2 instance
+reboots, Docker brings them back up automatically. You don't need to
+babysit it, but a low-RAM instance (see below) is still more likely to
+hit memory pressure under load than a bigger one.
+
+## Cost and free tier
+
+- `t2.micro`/`t3.micro` (1 GiB RAM) is free-tier eligible: up to 750
+  hours/month free for your first 12 months on AWS. A single instance
+  running continuously (~730 hrs/month) fits within that. This app's ML
+  dependencies (torch, transformers, spaCy) make 1 GiB tight, but it's
+  worth trying free before paying for anything.
+- `t3.small` (2 GiB RAM, not free-tier) costs roughly $15-17/month
+  running continuously — more headroom, easier to recommend if the
+  micro instance struggles.
+- **Stopping** the instance (not terminating — stopping preserves it,
+  you just don't get billed for compute while it's off) is safe and
+  free, but its public IP changes on restart unless you allocate an
+  **Elastic IP** (free while attached to a *running* instance; a small
+  hourly charge if left allocated while the instance is stopped — release
+  it if you stop the instance for a long stretch, or just don't bother
+  with an Elastic IP if a stable link isn't important to you).
+- Set a billing alert as a safety net regardless: **Billing → Budgets →
+  Create budget**, e.g. "notify me if spend exceeds $5".

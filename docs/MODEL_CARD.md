@@ -85,20 +85,60 @@ false-positive flag for a human to dismiss.
 This is a screening aid, not a substitute for legal review — true of any
 automated contract analysis tool.
 
-## Why not fine-tune a transformer
+## Why the production classifier isn't a fine-tuned transformer
 
 The original CUAD paper fine-tunes RoBERTa/DeBERTa for extractive QA,
-which needs a GPU and hours of training. Earlier BERT fine-tuning
-experiments on this same dataset are in
-`notebooks/bert-training.ipynb` (both a sequence-classification and an
-extractive-QA approach, via HuggingFace `transformers`). This project's
-pipeline trains and runs entirely on CPU, so the production classifier
-instead uses a frozen-embedding + linear-classifier approach — building
-on the embedding-based prototype in
-`notebooks/semantic-search-pipeline.ipynb` — to keep the whole pipeline
-(including retraining) practical without dedicated hardware. A
-fine-tuned transformer would likely improve accuracy meaningfully; it's
-the natural next step if GPU compute becomes available.
+which needs a GPU and hours of training. `notebooks/bert-training.ipynb`
+is earlier exploratory work — loading BERT and the real CUAD dataset via
+HuggingFace `transformers`/`datasets` and inspecting CUAD's structure —
+but it never combined the two into a real training run (its
+"training" cells fit on 4 hardcoded example sentences, not CUAD).
+
+`training/train_bert_classifier.py` picks that up for real: it fine-tunes
+`distilbert-base-uncased` on the same CUAD sentence data as the
+production classifier, for a direct comparison.
+
+## Fine-tuned transformer comparison
+
+`training/train_bert_classifier.py` fine-tuned `distilbert-base-uncased`
+for 3 epochs on 6,000 training sentences (capped down from the full
+22,204 available -- see below for why), evaluated on 1,500 held-out
+test sentences. Took 89 minutes on CPU. Full report:
+`models/bert_clause_classifier/eval_report.txt` (not checked in --
+regenerate by running the script).
+
+At its best threshold (0.3):
+
+| Metric | Value |
+|---|---|
+| Precision (micro-avg) | 0.76 |
+| Recall (micro-avg) | 0.42 |
+| F1 (micro-avg) | 0.54 |
+
+That F1 is *higher* than the production model's 0.51 -- but the
+headline number is misleading. On categories with enough training
+examples, DistilBERT clearly wins: Governing Law (F1 0.96 vs 0.89),
+Insurance (0.91 vs 0.91), Anti-Assignment (0.73 vs 0.50). But **11 of
+the 19 categories score exactly 0.00 precision/recall/F1** --
+Termination For Convenience, Post-Termination Services, Exclusivity,
+Renewal Term, Minimum Commitment, Non-Transferable License, Ip
+Ownership Assignment, Change Of Control, Non-Compete, Notice Period To
+Terminate Renewal, and Covenant Not To Sue. The model never predicts
+these categories at all.
+
+This is a direct consequence of the training set being capped at 6,000
+sentences to fit a CPU training budget: categories that were already
+less common become too sparse to learn from at that scale. The
+production model, trained on the full 22,204-sentence set, has *some*
+signal for every category (its worst F1 is 0.20, not 0.00).
+
+**This is why the production pipeline uses the frozen-embedding
+approach, not this fine-tuned model**: better coverage across all 19
+categories beats higher peak performance on a handful of them for a
+tool meant to screen a whole contract. Given a GPU (removing the
+CPU-imposed training-set cap), fine-tuning on the full dataset would
+likely beat the production model outright -- the failures here are a
+training-budget artifact, not a ceiling on what fine-tuning can do.
 
 ## Retraining
 
