@@ -1,5 +1,7 @@
 # ContractIQ
 
+**🔴 Live: [http://13.51.56.73:5173](http://13.51.56.73:5173)** — deployed on AWS EC2
+
 AI-powered contract analysis platform. Upload a PDF contract and get back
 named entities, detected clauses, and a risk assessment — backed by a
 clause classifier trained on a real legal dataset, not keyword matching.
