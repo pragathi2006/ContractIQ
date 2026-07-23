@@ -117,16 +117,26 @@ echo "VITE_API_URL=http://<YOUR_EC2_PUBLIC_IP>:8000" > .env
 npm run build
 ```
 
-Serve the built static site:
+Serve the built static site. **Run it detached from your SSH session**
+(a plain foreground `serve` command gets killed the moment you close
+the terminal or disconnect — this bit us during initial deployment):
 
 ```bash
 npm install -g serve
-serve -s dist -l 5173
+nohup serve -s dist -l 5173 > /tmp/serve.log 2>&1 &
+disown
 ```
 
-(For a longer-lived deployment, run this under `pm2` or as a `systemd`
-service instead of a foreground terminal, so it survives you logging
-out and the instance rebooting.)
+Verify it's actually up before disconnecting:
+
+```bash
+curl http://localhost:5173
+```
+
+You should see HTML output. Now it's safe to close the terminal — the
+process keeps running. (For something even more durable across
+instance *reboots*, not just disconnects, run it under `pm2` or as a
+`systemd` service instead — `nohup` alone won't survive a reboot.)
 
 ## 8. Open it
 
